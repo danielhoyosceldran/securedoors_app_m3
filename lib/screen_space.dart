@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:securedoors_app/tree.dart';
-import 'package:securedoors_app/screen_space.dart';
 
-class ScreenPartition extends StatefulWidget {
+class ScreenSpace extends StatefulWidget {
   final String id;
-  const ScreenPartition({
+  const ScreenSpace({
     Key? key,
     required this.id
   }) : super(key: key);
 
   @override
-  State<ScreenPartition> createState() => _ScreenPartitionState();
+  State<ScreenSpace> createState() => _ScreenSpaceState();
 }
 
-class _ScreenPartitionState extends State<ScreenPartition> {
+class _ScreenSpaceState extends State<ScreenSpace> {
   late Tree tree;
 
   @override
@@ -46,30 +45,10 @@ class _ScreenPartitionState extends State<ScreenPartition> {
     );
   }
 
-  Widget _buildRow(Area area, int index) {
-    assert (area is Partition || area is Space);
-    if (area is Partition) {
-      return ListTile(
-        title: Text('P ${area.id}'),
-        onTap: () => _navigateDownPartition(area.id),
-      );
-    } else {
-      return ListTile(
-        title: Text('S ${area.id}'),
-        onTap: () => _navigateDownSpace(area.id),
-      );
-    }
-  }
-
-  void _navigateDownPartition(String childId) {
-    Navigator.of(context)
-        .push(MaterialPageRoute<void>(builder: (context) => ScreenPartition(id: childId,))
-    );
-  }
-
-  void _navigateDownSpace(String childId) {
-    Navigator.of(context)
-        .push(MaterialPageRoute<void>(builder: (context) => ScreenSpace(id: childId,))
+  Widget _buildRow(Door door, int index) {
+    return ListTile(
+      title: Text('D ${door.id}'),
+      trailing: Text('${door.state}, closed=${door.closed}'),
     );
   }
 }
