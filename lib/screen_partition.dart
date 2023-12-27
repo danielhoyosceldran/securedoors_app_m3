@@ -27,6 +27,8 @@ class _ScreenPartitionState extends State<ScreenPartition> {
     return Scaffold(
       appBar: AppBar(
         title: Text(tree.root.id),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         actions: <Widget>[
           IconButton(icon: const Icon(Icons.home),
               onPressed: () {}
