@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:securedoors_app/tree.dart';
-import 'package:securedoors_app/requests.dart';
+import 'package:securedoors_app/requests.dart' as req;
 import 'package:securedoors_app/screen_space.dart';
+import 'dart:async';
 
 class ScreenPartition extends StatefulWidget {
   final String id;
@@ -17,10 +18,35 @@ class ScreenPartition extends StatefulWidget {
 class _ScreenPartitionState extends State<ScreenPartition> {
   late Future<Tree> futureTree;
 
+  late Timer _timer;
+  static const int periodeRefresh = 2;
+  // better a multiple of period in TimeTracker, 2 seconds
+
+  void _activateTimer() {
+    _timer = Timer.periodic(const Duration(seconds: periodeRefresh), (Timer t) {
+      futureTree = req.getTree(widget.id);
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    // "The framework calls this method when this State object will never build again"
+    // therefore when going up
+    _timer.cancel();
+    super.dispose();
+  }
+
+  void _refresh() async {
+    futureTree = req.getTree(widget.id);
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
-    futureTree = getTreeFuture(widget.id);
+    futureTree = req.getTree(widget.id);
+    _activateTimer();
   }
 
   // future with listview
@@ -85,13 +111,21 @@ class _ScreenPartitionState extends State<ScreenPartition> {
 
   void _navigateDownPartition(String childId) {
     Navigator.of(context)
-        .push(MaterialPageRoute<void>(builder: (context) => ScreenPartition(id: childId,))
-    );
+        .push(MaterialPageRoute<void>(
+      builder: (context) => ScreenPartition(id: childId),
+    ))
+        .then((var value) {
+      _refresh();
+    });
   }
 
   void _navigateDownSpace(String childId) {
     Navigator.of(context)
-        .push(MaterialPageRoute<void>(builder: (context) => ScreenSpace(id: childId,))
-    );
+        .push(MaterialPageRoute<void>(
+      builder: (context) => ScreenSpace(id: childId),
+    ))
+        .then((var value) {
+      _refresh();
+    });
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:securedoors_app/tree.dart';
-import 'package:securedoors_app/requests.dart';
+import 'package:securedoors_app/requests.dart' as req;
+import 'dart:async';
 
 class ScreenSpace extends StatefulWidget {
   final String id;
@@ -16,10 +17,30 @@ class ScreenSpace extends StatefulWidget {
 class _ScreenSpaceState extends State<ScreenSpace> {
   late Future<Tree> futureTree;
 
+  late Timer _timer;
+  static const int periodeRefresh = 2;
+  // better a multiple of period in TimeTracker, 2 seconds
+
+  void _activateTimer() {
+    _timer = Timer.periodic(const Duration(seconds: periodeRefresh), (Timer t) {
+      futureTree = req.getTree(widget.id);
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    // "The framework calls this method when this State object will never build again"
+    // therefore when going up
+    _timer.cancel();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
-    futureTree = getTreeFuture(widget.id);
+    futureTree = req.getTree(widget.id);
+    _activateTimer();
   }
 // future with listview
 // https://medium.com/nonstopio/flutter-future-builder-with-list-view-builder-d7212314e8c9

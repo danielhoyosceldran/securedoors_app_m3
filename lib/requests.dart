@@ -3,8 +3,8 @@ import 'dart:convert' as convert;
 
 import 'tree.dart';
 
-Future<Tree> getTreeFuture(String areaId) async {
-  const String BASE_URL = "http://localhost:8080";
+Future<Tree> getTree(String areaId) async {
+  const String BASE_URL = "https://47db-37-29-181-141.ngrok-free.app";//"http://localhost:8080";
   Uri uri = Uri.parse("${BASE_URL}/get_children?$areaId");
   final response = await http.get(uri);
   // response is NOT a Future because of await
