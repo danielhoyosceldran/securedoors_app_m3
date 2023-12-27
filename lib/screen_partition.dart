@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:securedoors_app/tree.dart';
+import 'package:securedoors_app/requests.dart';
 import 'package:securedoors_app/screen_space.dart';
 
 class ScreenPartition extends StatefulWidget {
@@ -14,37 +15,56 @@ class ScreenPartition extends StatefulWidget {
 }
 
 class _ScreenPartitionState extends State<ScreenPartition> {
-  late Tree tree;
+  late Future<Tree> futureTree;
 
   @override
   void initState() {
     super.initState();
-    tree = getTree(widget.id);
+    futureTree = getTreeFuture(widget.id);
   }
 
+  // future with listview
+// https://medium.com/nonstopio/flutter-future-builder-with-list-view-builder-d7212314e8c9
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(tree.root.id),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        actions: <Widget>[
-          IconButton(icon: const Icon(Icons.home),
-              onPressed: () {}
-            // TODO go home page = root
-          ),
-          //TODO other actions
-        ],
-      ),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: tree.root.children.length,
-        itemBuilder: (BuildContext context, int index) =>
-            _buildRow(tree.root.children[index], index),
-        separatorBuilder: (BuildContext context, int index) =>
-        const Divider(),
-      ),
+    return FutureBuilder<Tree>(
+      future: futureTree,
+      builder: (context, snapshot) {
+        // anonymous function
+        if (snapshot.hasData) {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
+              title: Text(snapshot.data!.root.id),
+              actions: <Widget>[
+                IconButton(icon: const Icon(Icons.home), onPressed: () {}
+                  // TODO go home page = root
+                ),
+                //TODO other actions
+              ],
+            ),
+            body: ListView.separated(
+              // it's like ListView.builder() but better because it includes a separator between items
+              padding: const EdgeInsets.all(16.0),
+              itemCount: snapshot.data!.root.children.length,
+              itemBuilder: (BuildContext context, int i) =>
+                  _buildRow(snapshot.data!.root.children[i], i),
+              separatorBuilder: (BuildContext context, int index) =>
+              const Divider(),
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return Text("${snapshot.error}");
+        }
+        // By default, show a progress indicator
+        return Container(
+            height: MediaQuery.of(context).size.height,
+            color: Colors.white,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ));
+      },
     );
   }
 

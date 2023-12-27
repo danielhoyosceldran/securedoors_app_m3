@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         ),
         // see https://docs.flutter.dev/cookbook/design/themes
       ),
-      home: ScreenPartition(id: "building"),
+      home: const ScreenPartition(id: "ROOT"),
       debugShowCheckedModeBanner: false,
     );
   }
