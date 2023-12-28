@@ -90,7 +90,24 @@ class _ScreenSpaceState extends State<ScreenSpace> {
   Widget _buildRow(Door door, int index) {
     return ListTile(
       title: Text('D ${door.id}'),
-      trailing: Text('${door.state}, closed=${door.closed}'),
+      trailing: door.state == 'locked' ?
+      TextButton(
+        onPressed: (){
+          req.unlockDoor(door);
+          futureTree = req.getTree(widget.id);
+          setState(() {});
+        },
+        child: const Text("unlock"),
+      )
+          : TextButton(
+        onPressed: () {
+          req.lockDoor(door);
+          futureTree = req.getTree(widget.id);
+          setState(() {});
+        },
+        child: const Text("lock"),
+      ),
+      
     );
   }
 }
