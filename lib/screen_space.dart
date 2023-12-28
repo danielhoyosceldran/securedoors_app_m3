@@ -5,10 +5,8 @@ import 'dart:async';
 
 class ScreenSpace extends StatefulWidget {
   final String id;
-  const ScreenSpace({
-    Key? key,
-    required this.id
-  }) : super(key: key);
+
+  const ScreenSpace({Key? key, required this.id}) : super(key: key);
 
   @override
   State<ScreenSpace> createState() => _ScreenSpaceState();
@@ -18,7 +16,8 @@ class _ScreenSpaceState extends State<ScreenSpace> {
   late Future<Tree> futureTree;
 
   late Timer _timer;
-  static const int periodeRefresh = 2;
+  static const int periodeRefresh = 6;
+
   // better a multiple of period in TimeTracker, 2 seconds
 
   void _activateTimer() {
@@ -42,6 +41,7 @@ class _ScreenSpaceState extends State<ScreenSpace> {
     futureTree = req.getTree(widget.id);
     _activateTimer();
   }
+
 // future with listview
 // https://medium.com/nonstopio/flutter-future-builder-with-list-view-builder-d7212314e8c9
   @override
@@ -57,10 +57,13 @@ class _ScreenSpaceState extends State<ScreenSpace> {
               foregroundColor: Theme.of(context).colorScheme.onPrimary,
               title: Text(snapshot.data!.root.id),
               actions: <Widget>[
-                IconButton(icon: const Icon(Icons.home), onPressed: () {}
-                  // TODO go home page = root
-                ),
-                //TODO other actions
+                IconButton(icon: const Icon(Icons.home), onPressed: () {
+                  while(Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  }
+                }
+                    ),
+                //TODO lock/unlock all
               ],
             ),
             body: ListView.separated(
@@ -70,7 +73,7 @@ class _ScreenSpaceState extends State<ScreenSpace> {
               itemBuilder: (BuildContext context, int i) =>
                   _buildRow(snapshot.data!.root.children[i], i),
               separatorBuilder: (BuildContext context, int index) =>
-              const Divider(),
+                  const Divider(),
             ),
           );
         } else if (snapshot.hasError) {
@@ -80,7 +83,7 @@ class _ScreenSpaceState extends State<ScreenSpace> {
         return Container(
             height: MediaQuery.of(context).size.height,
             color: Colors.white,
-            child: Center(
+            child: const Center(
               child: CircularProgressIndicator(),
             ));
       },
@@ -90,24 +93,73 @@ class _ScreenSpaceState extends State<ScreenSpace> {
   Widget _buildRow(Door door, int index) {
     return ListTile(
       title: Text('D ${door.id}'),
-      trailing: door.state == 'locked' ?
-      TextButton(
-        onPressed: (){
-          req.unlockDoor(door);
-          futureTree = req.getTree(widget.id);
-          setState(() {});
-        },
-        child: const Text("unlock"),
-      )
-          : TextButton(
-        onPressed: () {
-          req.lockDoor(door);
-          futureTree = req.getTree(widget.id);
-          setState(() {});
-        },
-        child: const Text("lock"),
+      trailing: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          door.state == 'locked'
+              ? TextButton(
+                  onPressed: () {
+                    req.unlockDoor(door);
+                    futureTree = req.getTree(widget.id);
+                    setState(() {});
+                  },
+                  child: const Text("unlock"),
+                )
+              : TextButton(
+                  onPressed: () {
+                    if (door.closed) {
+                      req.lockDoor(door);
+                      futureTree = req.getTree(widget.id);
+                      setState(() {});
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text(
+                              "Can't lock this door because it's opened. ",
+                              style: TextStyle(fontSize: 12),
+                            ),
+                            duration: Duration(seconds: 1)),
+                      );
+                    }
+                  },
+                  child: const Text("lock"),
+                ),
+          (!door.closed)
+              ? TextButton(
+                  onPressed: () {
+                    req.closeDoor(door);
+                    futureTree = req.getTree(widget.id);
+                    setState(() {});
+                  },
+                  child: const Text("close"),
+                )
+              : TextButton(
+                  onPressed: () {
+                    if (door.state == 'unlocked') {
+                      req.openDoor(door);
+                      futureTree = req.getTree(widget.id);
+                      setState(() {});
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text(
+                          "Can't open this door because it's locked. ",
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        duration: Duration(milliseconds: 800),
+                      ));
+                    }
+                  },
+                  child: Text(
+                    "open",
+                    style: TextStyle(
+                        color: (door.state == 'unlocked')
+                            ? Theme.of(context).colorScheme.primary
+                            : Colors.grey),
+                  ),
+                ),
+        ],
       ),
-      
     );
   }
 }

@@ -12,7 +12,7 @@ Future<String> sendRequest(Uri uri) async {
 // response is NOT a Future because of await
   if (response.statusCode == 200) {
     // server returns an OK response print("statusCode=$response.statusCode");
-    print(response.body);
+    print("respone" + response.body);
     return response.body;
   } else {
     print("statusCode=$response.statusCode");
@@ -24,18 +24,28 @@ Future<Tree> getTree(String areaId) async {
   Uri uri = Uri.parse("${BASE_URL}/get_children?$areaId");
   final String responseBody = await sendRequest(uri);
   Map<String, dynamic> decoded = convert.jsonDecode(responseBody);
+  print("decoded");
+  print(decoded);
   return Tree(decoded);
 }
 
 Future<void> lockDoor(Door door) async {
-  lockUnlockDoor(door, 'lock');
+  doorActions(door, 'lock');
 }
 
 Future<void> unlockDoor(Door door) async {
-  lockUnlockDoor(door, 'unlock');
+  doorActions(door, 'unlock');
 }
 
-Future<void> lockUnlockDoor(Door door, String action) async {
+Future<void> closeDoor(Door door) async {
+  doorActions(door, 'close');
+}
+
+Future<void> openDoor(Door door) async {
+  doorActions(door, 'open');
+}
+
+Future<void> doorActions(Door door, String action) async {
 // From the simulator : when asking to lock door D1, of parking, the request is
 // http://localhost:8080/reader?credential=11343&action=lock
 //	&datetime=2023-12-08T09:30&doorId=D1 assert ((action=='lock') | (action=='unlock'));

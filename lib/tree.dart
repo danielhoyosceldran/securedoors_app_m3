@@ -23,14 +23,14 @@ class Door {
 class Tree {
   late Area root;
 
-  Tree(Map<String, dynamic> dec) {
+  Tree(Map<String, dynamic> decodedTree) {
     // 1 level tree, root and children only, root is either Partition or Space.
     // If Partition children are Partition or Space, that is, Area. If root
     // is a Space, children are Door.
     // There is a JSON field 'class' that tells the type of Area.
-    if (dec['class'] == "partition") {
+    if (decodedTree['class'] == "partition") {
       List<Area> children = <Area>[]; // is growable
-      for (Map<String, dynamic> area in dec['areas']) {
+      for (Map<String, dynamic> area in decodedTree['areas']) {
         if (area['class'] == "partition") {
           children.add(Partition(area['id'], <Area>[]));
         } else if (area['class'] == "space") {
@@ -39,13 +39,13 @@ class Tree {
           assert(false);
         }
       }
-      root = Partition(dec['id'], children);
-    } else if (dec['class'] == "space") {
+      root = Partition(decodedTree['id'], children);
+    } else if (decodedTree['class'] == "space") {
       List<Door> children = <Door>[];
-      for (Map<String, dynamic> d in dec['access_doors']) {
+      for (Map<String, dynamic> d in decodedTree['access_doors']) {
         children.add(Door(id: d['id'], state: d['state'], closed: d['closed']));
       }
-      root = Space(dec['id'], children);
+      root = Space(decodedTree['id'], children);
     } else {
       assert(false);
     }

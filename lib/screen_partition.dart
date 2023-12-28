@@ -6,10 +6,8 @@ import 'dart:async';
 
 class ScreenPartition extends StatefulWidget {
   final String id;
-  const ScreenPartition({
-    Key? key,
-    required this.id
-  }) : super(key: key);
+
+  const ScreenPartition({Key? key, required this.id}) : super(key: key);
 
   @override
   State<ScreenPartition> createState() => _ScreenPartitionState();
@@ -19,7 +17,8 @@ class _ScreenPartitionState extends State<ScreenPartition> {
   late Future<Tree> futureTree;
 
   late Timer _timer;
-  static const int periodeRefresh = 2;
+  static const int periodeRefresh = 6;
+
   // better a multiple of period in TimeTracker, 2 seconds
 
   void _activateTimer() {
@@ -64,10 +63,13 @@ class _ScreenPartitionState extends State<ScreenPartition> {
               foregroundColor: Theme.of(context).colorScheme.onPrimary,
               title: Text(snapshot.data!.root.id),
               actions: <Widget>[
-                IconButton(icon: const Icon(Icons.home), onPressed: () {}
-                  // TODO go home page = root
-                ),
-                //TODO other actions
+                IconButton(icon: const Icon(Icons.home), onPressed: () {
+                  while(Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  }
+                }
+                    ),
+                //TODO lock/unlock all
               ],
             ),
             body: ListView.separated(
@@ -77,7 +79,7 @@ class _ScreenPartitionState extends State<ScreenPartition> {
               itemBuilder: (BuildContext context, int i) =>
                   _buildRow(snapshot.data!.root.children[i], i),
               separatorBuilder: (BuildContext context, int index) =>
-              const Divider(),
+                  const Divider(),
             ),
           );
         } else if (snapshot.hasError) {
@@ -87,7 +89,7 @@ class _ScreenPartitionState extends State<ScreenPartition> {
         return Container(
             height: MediaQuery.of(context).size.height,
             color: Colors.white,
-            child: Center(
+            child: const Center(
               child: CircularProgressIndicator(),
             ));
       },
@@ -95,25 +97,49 @@ class _ScreenPartitionState extends State<ScreenPartition> {
   }
 
   Widget _buildRow(Area area, int index) {
-    assert (area is Partition || area is Space);
+    assert(area is Partition || area is Space);
     if (area is Partition) {
       return ListTile(
         title: Text('P ${area.id}'),
         onTap: () => _navigateDownPartition(area.id),
+        trailing: const Icon(
+          Icons.arrow_forward_ios,
+          size: 15,
+        ),
       );
     } else {
       return ListTile(
         title: Text('S ${area.id}'),
         onTap: () => _navigateDownSpace(area.id),
+        trailing: const Icon(
+          Icons.arrow_forward_ios,
+          size: 15,
+        ),
       );
     }
   }
 
+  Route _forwardRoute(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0);
+        const end = Offset.zero;
+        const curve = Curves.ease;
+
+        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
+  }
+
   void _navigateDownPartition(String childId) {
     Navigator.of(context)
-        .push(MaterialPageRoute<void>(
-      builder: (context) => ScreenPartition(id: childId),
-    ))
+        .push(_forwardRoute(ScreenPartition(id: childId)))
         .then((var value) {
       _refresh();
     });
@@ -121,9 +147,7 @@ class _ScreenPartitionState extends State<ScreenPartition> {
 
   void _navigateDownSpace(String childId) {
     Navigator.of(context)
-        .push(MaterialPageRoute<void>(
-      builder: (context) => ScreenSpace(id: childId),
-    ))
+        .push(_forwardRoute(ScreenSpace(id: childId)))
         .then((var value) {
       _refresh();
     });
