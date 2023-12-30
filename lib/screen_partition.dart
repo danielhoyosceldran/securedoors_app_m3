@@ -5,6 +5,7 @@ import 'package:securedoors_app/screen_space.dart';
 import 'dart:async';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:securedoors_app/utils/messages.dart' as message;
+import 'package:securedoors_app/widgets/appBar.dart';
 
 class ScreenPartition extends StatefulWidget {
   final String id;
@@ -51,7 +52,6 @@ class _ScreenPartitionState extends State<ScreenPartition> {
   }
 
   // future with listview
-// https://medium.com/nonstopio/flutter-future-builder-with-list-view-builder-d7212314e8c9
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Tree>(
@@ -60,23 +60,9 @@ class _ScreenPartitionState extends State<ScreenPartition> {
         // anonymous function
         if (snapshot.hasData) {
           return Scaffold(
-              appBar: AppBar(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                title: Text(snapshot.data!.root.id),
-                actions: <Widget>[
-                  IconButton(
-                      icon: const Icon(Icons.home),
-                      onPressed: () {
-                        while (Navigator.of(context).canPop()) {
-                          Navigator.of(context).pop();
-                        }
-                      }),
-                  //TODO lock/unlock all
-                ],
-              ),
+              appBar:
+                  customAppBar(context: context, id: snapshot.data!.root.id),
               body: ListView.separated(
-                // it's like ListView.builder() but better because it includes a separator between items
                 padding: const EdgeInsets.all(16.0),
                 itemCount: snapshot.data!.root.children.length,
                 itemBuilder: (BuildContext context, int i) =>
@@ -85,25 +71,27 @@ class _ScreenPartitionState extends State<ScreenPartition> {
                     const Divider(),
               ),
               floatingActionButton: SpeedDial(
-                label: Text("Actions"),
+                label: const Text("Actions"),
                 children: [
                   SpeedDialChild(
                       label: "Lock All",
-                      child: Icon(Icons.lock_outline),
+                      child: const Icon(Icons.lock_outline),
                       onTap: () {
                         req.lockAll(snapshot.data!.root);
                         futureTree = req.getTree(widget.id);
                         setState(() {});
-                        message.infoMessage(context, "All ${widget.id} doors locked!");
+                        message.infoMessage(
+                            context, "All ${widget.id} doors locked!");
                       }),
                   SpeedDialChild(
                       label: "Unlock All",
-                      child: Icon(Icons.lock_open_outlined),
+                      child: const Icon(Icons.lock_open_outlined),
                       onTap: () {
                         req.unlockAll(snapshot.data!.root);
                         futureTree = req.getTree(widget.id);
                         setState(() {});
-                        message.infoMessage(context, "All ${widget.id} doors unlocked!");
+                        message.infoMessage(
+                            context, "All ${widget.id} doors unlocked!");
                       }),
                 ],
               ));

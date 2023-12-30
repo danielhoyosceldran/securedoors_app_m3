@@ -3,6 +3,7 @@ import 'package:securedoors_app/utils/tree.dart';
 import 'package:securedoors_app/requests/actionsRequests.dart' as req;
 import 'dart:async';
 import 'package:securedoors_app/utils/messages.dart' as message;
+import 'package:securedoors_app/widgets/appBar.dart';
 
 class ScreenSpace extends StatefulWidget {
   final String id;
@@ -53,20 +54,7 @@ class _ScreenSpaceState extends State<ScreenSpace> {
         // anonymous function
         if (snapshot.hasData) {
           return Scaffold(
-            appBar: AppBar(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              title: Text(snapshot.data!.root.id),
-              actions: <Widget>[
-                IconButton(icon: const Icon(Icons.home), onPressed: () {
-                  while(Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
-                  }
-                }
-                    ),
-                //TODO lock/unlock all
-              ],
-            ),
+            appBar: customAppBar(context: context, id: snapshot.data!.root.id),
             body: ListView.separated(
               // it's like ListView.builder() but better because it includes a separator between items
               padding: const EdgeInsets.all(16.0),
@@ -114,16 +102,17 @@ class _ScreenSpaceState extends State<ScreenSpace> {
                       futureTree = req.getTree(widget.id);
                       setState(() {});
                     } else {
-                      message.infoMessage(context, "Can't lock this door because it's opened.");
+                      message.infoMessage(
+                          context, "Can't lock this door because it's opened.");
                     }
                   },
-            child: Text(
-              "lock",
-              style: TextStyle(
-                  color: (door.closed)
-                      ? Theme.of(context).colorScheme.primary
-                      : Colors.grey),
-            ),
+                  child: Text(
+                    "lock",
+                    style: TextStyle(
+                        color: (door.closed)
+                            ? Theme.of(context).colorScheme.primary
+                            : Colors.grey),
+                  ),
                 ),
           (!door.closed)
               ? TextButton(
@@ -141,7 +130,8 @@ class _ScreenSpaceState extends State<ScreenSpace> {
                       futureTree = req.getTree(widget.id);
                       setState(() {});
                     } else {
-                      message.infoMessage(context, "Can't open this door because it's locked.");
+                      message.infoMessage(
+                          context, "Can't open this door because it's locked.");
                     }
                   },
                   child: Text(
