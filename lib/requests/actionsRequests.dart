@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import 'package:intl/intl.dart';
 
-import 'tree.dart';
+import '../tree.dart';
 
 const String BASE_URL = "http://localhost:8080";
 final DateFormat DATEFORMATTER = DateFormat('yyyy-MM-ddThh:mm');
@@ -45,6 +45,14 @@ Future<void> openDoor(Door door) async {
   doorActions(door, 'open');
 }
 
+Future<void> lockAll(Area area) async {
+  areaActions(area, 'lock');
+}
+
+Future<void> unlockAll(Area area) async {
+  areaActions(area, 'unlock');
+}
+
 Future<void> doorActions(Door door, String action) async {
 // From the simulator : when asking to lock door D1, of parking, the request is
 // http://localhost:8080/reader?credential=11343&action=lock
@@ -56,5 +64,13 @@ Future<void> doorActions(Door door, String action) async {
 // credential 11343 corresponds to user Ana of Administrator group
   print('lock ${door.id}, uri $uri');
   final String responseBody = await sendRequest(uri);
-  print('requests.dart : door ${door.id} is ${door.state}');
+  print('actionsRequests.dart : door ${door.id} is ${door.state}');
+}
+
+Future<void> areaActions(Area area, String action) async {
+  String strNow = DATEFORMATTER.format(DateTime.now());
+  Uri uri = Uri.parse("${BASE_URL}/area?credential=11343&action=$action"
+      "&datetime=$strNow&doorId=${area.id}");
+// credential 11343 corresponds to user Ana of Administrator group
+  final String responseBody = await sendRequest(uri);
 }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:securedoors_app/tree.dart';
-import 'package:securedoors_app/requests.dart' as req;
+import 'package:securedoors_app/requests/actionsRequests.dart' as req;
 import 'dart:async';
+import 'package:securedoors_app/utils/messages.dart' as message;
 
 class ScreenSpace extends StatefulWidget {
   final String id;
@@ -113,17 +114,16 @@ class _ScreenSpaceState extends State<ScreenSpace> {
                       futureTree = req.getTree(widget.id);
                       setState(() {});
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text(
-                              "Can't lock this door because it's opened. ",
-                              style: TextStyle(fontSize: 12),
-                            ),
-                            duration: Duration(seconds: 1)),
-                      );
+                      message.infoMessage(context, "Can't lock this door because it's opened.");
                     }
                   },
-                  child: const Text("lock"),
+            child: Text(
+              "lock",
+              style: TextStyle(
+                  color: (door.closed)
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.grey),
+            ),
                 ),
           (!door.closed)
               ? TextButton(
@@ -141,13 +141,7 @@ class _ScreenSpaceState extends State<ScreenSpace> {
                       futureTree = req.getTree(widget.id);
                       setState(() {});
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text(
-                          "Can't open this door because it's locked. ",
-                          style: TextStyle(fontSize: 12),
-                        ),
-                        duration: Duration(milliseconds: 800),
-                      ));
+                      message.infoMessage(context, "Can't open this door because it's locked.");
                     }
                   },
                   child: Text(

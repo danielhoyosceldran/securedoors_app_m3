@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:securedoors_app/tree.dart';
-import 'package:securedoors_app/requests.dart' as req;
+import 'package:securedoors_app/requests/actionsRequests.dart' as req;
 import 'package:securedoors_app/screen_space.dart';
 import 'dart:async';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:securedoors_app/utils/messages.dart' as message;
 
 class ScreenPartition extends StatefulWidget {
   final String id;
@@ -58,30 +60,53 @@ class _ScreenPartitionState extends State<ScreenPartition> {
         // anonymous function
         if (snapshot.hasData) {
           return Scaffold(
-            appBar: AppBar(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              title: Text(snapshot.data!.root.id),
-              actions: <Widget>[
-                IconButton(icon: const Icon(Icons.home), onPressed: () {
-                  while(Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
-                  }
-                }
-                    ),
-                //TODO lock/unlock all
-              ],
-            ),
-            body: ListView.separated(
-              // it's like ListView.builder() but better because it includes a separator between items
-              padding: const EdgeInsets.all(16.0),
-              itemCount: snapshot.data!.root.children.length,
-              itemBuilder: (BuildContext context, int i) =>
-                  _buildRow(snapshot.data!.root.children[i], i),
-              separatorBuilder: (BuildContext context, int index) =>
-                  const Divider(),
-            ),
-          );
+              appBar: AppBar(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                title: Text(snapshot.data!.root.id),
+                actions: <Widget>[
+                  IconButton(
+                      icon: const Icon(Icons.home),
+                      onPressed: () {
+                        while (Navigator.of(context).canPop()) {
+                          Navigator.of(context).pop();
+                        }
+                      }),
+                  //TODO lock/unlock all
+                ],
+              ),
+              body: ListView.separated(
+                // it's like ListView.builder() but better because it includes a separator between items
+                padding: const EdgeInsets.all(16.0),
+                itemCount: snapshot.data!.root.children.length,
+                itemBuilder: (BuildContext context, int i) =>
+                    _buildRow(snapshot.data!.root.children[i], i),
+                separatorBuilder: (BuildContext context, int index) =>
+                    const Divider(),
+              ),
+              floatingActionButton: SpeedDial(
+                label: Text("Actions"),
+                children: [
+                  SpeedDialChild(
+                      label: "Lock All",
+                      child: Icon(Icons.lock_outline),
+                      onTap: () {
+                        req.lockAll(snapshot.data!.root);
+                        futureTree = req.getTree(widget.id);
+                        setState(() {});
+                        message.infoMessage(context, "All ${widget.id} doors locked!");
+                      }),
+                  SpeedDialChild(
+                      label: "Unlock All",
+                      child: Icon(Icons.lock_open_outlined),
+                      onTap: () {
+                        req.unlockAll(snapshot.data!.root);
+                        futureTree = req.getTree(widget.id);
+                        setState(() {});
+                        message.infoMessage(context, "All ${widget.id} doors unlocked!");
+                      }),
+                ],
+              ));
         } else if (snapshot.hasError) {
           return Text("${snapshot.error}");
         }
@@ -127,7 +152,8 @@ class _ScreenPartitionState extends State<ScreenPartition> {
         const end = Offset.zero;
         const curve = Curves.ease;
 
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
         return SlideTransition(
           position: animation.drive(tween),
