@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import 'package:intl/intl.dart';
 
-import '../tree.dart';
+import '../utils/tree.dart';
 
 const String BASE_URL = "http://localhost:8080";
 final DateFormat DATEFORMATTER = DateFormat('yyyy-MM-ddThh:mm');
