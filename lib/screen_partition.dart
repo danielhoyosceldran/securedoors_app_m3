@@ -9,8 +9,9 @@ import 'package:securedoors_app/widgets/widget_appBar.dart';
 
 class ScreenPartition extends StatefulWidget {
   final String id;
+  String? profilePhoto;
 
-  const ScreenPartition({Key? key, required this.id}) : super(key: key);
+  ScreenPartition({Key? key, required this.id, this.profilePhoto = "lib/assets/users/guest.jpg"}) : super(key: key);
 
   @override
   State<ScreenPartition> createState() => _ScreenPartitionState();
@@ -60,8 +61,10 @@ class _ScreenPartitionState extends State<ScreenPartition> {
         // anonymous function
         if (snapshot.hasData) {
           return Scaffold(
-              appBar:
-                  customAppBar(context: context, id: snapshot.data!.root.id),
+              appBar: customAppBar(
+                  context: context,
+                  id: snapshot.data!.root.id,
+                  profilePhoto: widget.profilePhoto),
               body: ListView.separated(
                 padding: const EdgeInsets.all(16.0),
                 itemCount: snapshot.data!.root.children.length,
@@ -73,7 +76,7 @@ class _ScreenPartitionState extends State<ScreenPartition> {
               floatingActionButton: SpeedDial(
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 label: Icon(
-                    Icons.lock_outline,
+                  Icons.lock_outline,
                   color: Theme.of(context).colorScheme.onPrimary,
                 ), //const Text("actions"),
                 children: [
@@ -157,7 +160,7 @@ class _ScreenPartitionState extends State<ScreenPartition> {
 
   void _navigateDownPartition(String childId) {
     Navigator.of(context)
-        .push(_forwardRoute(ScreenPartition(id: childId)))
+        .push(_forwardRoute(ScreenPartition(id: childId, profilePhoto: widget.profilePhoto,)))
         .then((var value) {
       _refresh();
     });
@@ -165,7 +168,7 @@ class _ScreenPartitionState extends State<ScreenPartition> {
 
   void _navigateDownSpace(String childId) {
     Navigator.of(context)
-        .push(_forwardRoute(ScreenSpace(id: childId)))
+        .push(_forwardRoute(ScreenSpace(id: childId, profilePhoto: widget.profilePhoto,)))
         .then((var value) {
       _refresh();
     });

@@ -6,7 +6,6 @@ class ScreenUsers extends StatelessWidget {
 
   Widget _user(BuildContext context, {profilePhoto: String, name: String}) {
     return GestureDetector(
-
       onTap: () {
         _navigateDownPartition(context, "ROOT", profilePhoto);
       },
@@ -66,7 +65,7 @@ class ScreenUsers extends StatelessWidget {
 
   void _navigateDownPartition(BuildContext context, String childId, String profilePhoto) {
     Navigator.of(context)
-        .pushReplacement(MaterialPageRoute<void>(builder: (context) => ScreenPartition(id: childId))
+        .pushReplacement(MaterialPageRoute<void>(builder: (context) => ScreenPartition(id: childId, profilePhoto: profilePhoto,))
     );
   }
 }

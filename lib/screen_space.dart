@@ -7,9 +7,9 @@ import 'package:securedoors_app/widgets/widget_appBar.dart';
 
 class ScreenSpace extends StatefulWidget {
   final String id;
+  String? profilePhoto;
 
-  const ScreenSpace({Key? key, required this.id})
-      : super(key: key);
+  ScreenSpace({Key? key, required this.id, this.profilePhoto = "lib/assets/users/guest.jpg"}) : super(key: key);
 
   @override
   State<ScreenSpace> createState() => _ScreenSpaceState();
@@ -55,7 +55,10 @@ class _ScreenSpaceState extends State<ScreenSpace> {
         // anonymous function
         if (snapshot.hasData) {
           return Scaffold(
-            appBar: customAppBar(context: context, id: snapshot.data!.root.id),
+            appBar: customAppBar(
+                context: context,
+                id: snapshot.data!.root.id,
+                profilePhoto:widget.profilePhoto),
             body: ListView.separated(
               // it's like ListView.builder() but better because it includes a separator between items
               padding: const EdgeInsets.all(16.0),
