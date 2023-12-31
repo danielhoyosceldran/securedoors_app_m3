@@ -3,12 +3,13 @@ import 'package:securedoors_app/utils/tree.dart';
 import 'package:securedoors_app/requests/actionsRequests.dart' as req;
 import 'dart:async';
 import 'package:securedoors_app/utils/messages.dart' as message;
-import 'package:securedoors_app/widgets/appBar.dart';
+import 'package:securedoors_app/widgets/widget_appBar.dart';
 
 class ScreenSpace extends StatefulWidget {
   final String id;
 
-  const ScreenSpace({Key? key, required this.id}) : super(key: key);
+  const ScreenSpace({Key? key, required this.id})
+      : super(key: key);
 
   @override
   State<ScreenSpace> createState() => _ScreenSpaceState();
@@ -64,6 +65,7 @@ class _ScreenSpaceState extends State<ScreenSpace> {
               separatorBuilder: (BuildContext context, int index) =>
                   const Divider(),
             ),
+            endDrawer: Drawer(),
           );
         } else if (snapshot.hasError) {
           return Text("${snapshot.error}");

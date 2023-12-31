@@ -22,9 +22,8 @@ class MyApp extends StatelessWidget {
         textTheme: const TextTheme(
           bodyMedium: TextStyle(fontSize: 20), // size of hello
         ),
-        // see https://docs.flutter.dev/cookbook/design/themes
       ),
-      home: const ScreenPartition(id: "ROOT"),
+      home: const ScreenUsers(),
       debugShowCheckedModeBanner: false,
     );
   }

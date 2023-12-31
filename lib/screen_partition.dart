@@ -5,7 +5,7 @@ import 'package:securedoors_app/screen_space.dart';
 import 'dart:async';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:securedoors_app/utils/messages.dart' as message;
-import 'package:securedoors_app/widgets/appBar.dart';
+import 'package:securedoors_app/widgets/widget_appBar.dart';
 
 class ScreenPartition extends StatefulWidget {
   final String id;
@@ -71,7 +71,11 @@ class _ScreenPartitionState extends State<ScreenPartition> {
                     const Divider(),
               ),
               floatingActionButton: SpeedDial(
-                label: const Text("Actions"),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                label: Icon(
+                    Icons.lock_outline,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ), //const Text("actions"),
                 children: [
                   SpeedDialChild(
                       label: "Lock All",

@@ -6,34 +6,41 @@ class ScreenUsers extends StatelessWidget {
 
   Widget _user(BuildContext context, {profilePhoto: String, name: String}) {
     return GestureDetector(
+
       onTap: () {
-        _navigateDownPartition(context, "ROOT");
+        _navigateDownPartition(context, "ROOT", profilePhoto);
       },
-      child: Row(
-        children: [
-          Container(
-              margin: const EdgeInsets.only(left: 50),
-              padding: const EdgeInsets.only(right: 20, bottom: 20),
-              child: (profilePhoto == "no")
-                  ? const Icon(
-                      Icons.person,
-                      size: 80,
-                    )
-                  : Container(
-                      clipBehavior: Clip.hardEdge,
-                      width: 80,
-                      decoration: const BoxDecoration(shape: BoxShape.circle),
-                      child: Image.asset(
-                        profilePhoto,
-                      ),
-                    )),
-          Text(name),
-          const Spacer(),
-          Container(
-            padding: const EdgeInsets.only(right: 40),
-            child: const Icon(Icons.arrow_forward_ios),
-          ),
-        ],
+      child: Container(
+        color: Colors.transparent,
+        child: Row(
+          children: [
+            Container(
+                margin: const EdgeInsets.only(left: 50),
+                padding: const EdgeInsets.only(right: 20, bottom: 20),
+                child: (profilePhoto == "no")
+                    ? const Icon(
+                  Icons.person,
+                  size: 80,
+                )
+                    : Container(
+                  clipBehavior: Clip.hardEdge,
+                  width: 80,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                    color: Colors.grey.shade200
+                  ),
+                  child: Image.asset(
+                    profilePhoto,
+                  ),
+                )),
+            Text(name),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.only(right: 40),
+              child: const Icon(Icons.arrow_forward_ios),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -51,15 +58,15 @@ class ScreenUsers extends StatelessWidget {
           _user(profilePhoto: "lib/assets/users/Manel.jpg", name: "Manel", context),
           _user(profilePhoto: "lib/assets/users/Eulalia.jpg", name: "Eulalia", context),
           _user(profilePhoto: "lib/assets/users/Bernat.jpg", name: "Bernat", context),
-          _user(profilePhoto: "no", name: "Unknown", context),
+          _user(profilePhoto: "lib/assets/users/guest.png", name: "Unknown", context),
         ],
       ),
     ));
   }
 
-  void _navigateDownPartition(BuildContext context, String childId) {
+  void _navigateDownPartition(BuildContext context, String childId, String profilePhoto) {
     Navigator.of(context)
-        .push(MaterialPageRoute<void>(builder: (context) => ScreenPartition(id: childId,))
+        .pushReplacement(MaterialPageRoute<void>(builder: (context) => ScreenPartition(id: childId))
     );
   }
 }
