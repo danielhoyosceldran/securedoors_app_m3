@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:securedoors_app/screen_partition.dart';
-import 'package:securedoors_app/screen_space.dart';
 import 'package:securedoors_app/screen_users.dart';
 
 void main() {

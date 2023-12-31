@@ -84,7 +84,8 @@ class _ScreenPartitionState extends State<ScreenPartition> {
                       label: "Lock All",
                       child: const Icon(Icons.lock_outline),
                       onTap: () {
-                        req.lockAll(snapshot.data!.root);
+                        req.lockAll(snapshot.data!.root).then((value) =>
+                        {if (!value) message.credentialsError(context)});
                         futureTree = req.getTree(widget.id);
                         setState(() {});
                         message.infoMessage(
@@ -94,7 +95,8 @@ class _ScreenPartitionState extends State<ScreenPartition> {
                       label: "Unlock All",
                       child: const Icon(Icons.lock_open_outlined),
                       onTap: () {
-                        req.unlockAll(snapshot.data!.root);
+                        req.unlockAll(snapshot.data!.root).then((value) =>
+                        {if (!value) message.credentialsError(context)});
                         futureTree = req.getTree(widget.id);
                         setState(() {});
                         message.infoMessage(
@@ -120,7 +122,8 @@ class _ScreenPartitionState extends State<ScreenPartition> {
     assert(area is Partition || area is Space);
     if (area is Partition) {
       return ListTile(
-        title: Text('P ${area.id}'),
+        title: Text(area.id),
+        leading: const Icon(Icons.space_dashboard_outlined),
         onTap: () => _navigateDownPartition(area.id),
         trailing: const Icon(
           Icons.arrow_forward_ios,
@@ -129,12 +132,20 @@ class _ScreenPartitionState extends State<ScreenPartition> {
       );
     } else {
       return ListTile(
-        title: Text('S ${area.id}'),
+        title: Text(area.id),
+        leading: const Icon(Icons.space_bar_outlined),
         onTap: () => _navigateDownSpace(area.id),
-        trailing: const Icon(
-          Icons.arrow_forward_ios,
-          size: 15,
-        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            //if (area.children.isEmpty) const Text("No doors"),
+            const SizedBox(width: 20,),
+            const Icon(
+              Icons.arrow_forward_ios,
+              size: 15,
+            ),
+          ],
+        )
       );
     }
   }

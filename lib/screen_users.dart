@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:securedoors_app/screen_partition.dart';
+import 'package:securedoors_app/utils/credentials.dart';
+import 'package:securedoors_app/data/currentUser.dart';
 
 class ScreenUsers extends StatelessWidget {
   const ScreenUsers({Key? key}) : super(key: key);
 
-  Widget _user(BuildContext context, {profilePhoto: String, name: String}) {
+  Widget _user(BuildContext context, {profilePhoto: String, name: String, credentials: String}) {
     return GestureDetector(
       onTap: () {
+        updateCurrentUser(
+          currentUserCredentials: credentials,
+          currentUserName: name,
+          currentUserPhoto: profilePhoto
+        );
         _navigateDownPartition(context, "ROOT", profilePhoto);
       },
       child: Container(
@@ -53,11 +60,11 @@ class ScreenUsers extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _user(profilePhoto: "lib/assets/users/Ana.jpg", name: "Ana", context),
-          _user(profilePhoto: "lib/assets/users/Manel.jpg", name: "Manel", context),
-          _user(profilePhoto: "lib/assets/users/Eulalia.jpg", name: "Eulalia", context),
-          _user(profilePhoto: "lib/assets/users/Bernat.jpg", name: "Bernat", context),
-          _user(profilePhoto: "lib/assets/users/guest.png", name: "Unknown", context),
+          // To add user add firstly on lib/utils/credentials.dart
+          _user(profilePhoto: "lib/assets/users/Ana.jpg", name: "Ana", context, credentials: CREDENTIALS["Ana"]),
+          _user(profilePhoto: "lib/assets/users/Manel.jpg", name: "Manel", context, credentials: CREDENTIALS["Manel"]),
+          _user(profilePhoto: "lib/assets/users/Eulalia.jpg", name: "Eulalia", context, credentials: CREDENTIALS["Eulalia"]),
+          _user(profilePhoto: "lib/assets/users/Bernat.jpg", name: "Bernat", context, credentials: CREDENTIALS["Bernat"]),
         ],
       ),
     ));

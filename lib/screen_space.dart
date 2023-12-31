@@ -3,13 +3,18 @@ import 'package:securedoors_app/utils/tree.dart';
 import 'package:securedoors_app/requests/actionsRequests.dart' as req;
 import 'dart:async';
 import 'package:securedoors_app/utils/messages.dart' as message;
+import 'package:securedoors_app/utils/alerts.dart' as alert;
 import 'package:securedoors_app/widgets/widget_appBar.dart';
 
 class ScreenSpace extends StatefulWidget {
   final String id;
   String? profilePhoto;
 
-  ScreenSpace({Key? key, required this.id, this.profilePhoto = "lib/assets/users/guest.jpg"}) : super(key: key);
+  ScreenSpace(
+      {Key? key,
+      required this.id,
+      this.profilePhoto = "lib/assets/users/guest.jpg"})
+      : super(key: key);
 
   @override
   State<ScreenSpace> createState() => _ScreenSpaceState();
@@ -58,7 +63,7 @@ class _ScreenSpaceState extends State<ScreenSpace> {
             appBar: customAppBar(
                 context: context,
                 id: snapshot.data!.root.id,
-                profilePhoto:widget.profilePhoto),
+                profilePhoto: widget.profilePhoto),
             body: ListView.separated(
               // it's like ListView.builder() but better because it includes a separator between items
               padding: const EdgeInsets.all(16.0),
@@ -68,7 +73,6 @@ class _ScreenSpaceState extends State<ScreenSpace> {
               separatorBuilder: (BuildContext context, int index) =>
                   const Divider(),
             ),
-            endDrawer: Drawer(),
           );
         } else if (snapshot.hasError) {
           return Text("${snapshot.error}");
@@ -86,7 +90,12 @@ class _ScreenSpaceState extends State<ScreenSpace> {
 
   Widget _buildRow(Door door, int index) {
     return ListTile(
-      title: Text('D ${door.id}'),
+      title: Text(door.id),
+      leading: (door.state == "locked")
+          ? const Icon(Icons.lock_outline)
+          : (door.closed)
+              ? const Icon(Icons.door_back_door_outlined)
+              : const Icon(Icons.meeting_room_outlined),
       trailing: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
@@ -94,7 +103,8 @@ class _ScreenSpaceState extends State<ScreenSpace> {
           door.state == 'locked'
               ? TextButton(
                   onPressed: () {
-                    req.unlockDoor(door);
+                    req.unlockDoor(door).then((value) =>
+                        {if (!value) message.credentialsError(context)});
                     futureTree = req.getTree(widget.id);
                     setState(() {});
                   },
@@ -103,7 +113,8 @@ class _ScreenSpaceState extends State<ScreenSpace> {
               : TextButton(
                   onPressed: () {
                     if (door.closed) {
-                      req.lockDoor(door);
+                      req.lockDoor(door).then((value) =>
+                          {if (!value) message.credentialsError(context)});
                       futureTree = req.getTree(widget.id);
                       setState(() {});
                     } else {
@@ -122,7 +133,8 @@ class _ScreenSpaceState extends State<ScreenSpace> {
           (!door.closed)
               ? TextButton(
                   onPressed: () {
-                    req.closeDoor(door);
+                    req.closeDoor(door).then((value) =>
+                        {if (!value) message.credentialsError(context)});
                     futureTree = req.getTree(widget.id);
                     setState(() {});
                   },
@@ -131,7 +143,8 @@ class _ScreenSpaceState extends State<ScreenSpace> {
               : TextButton(
                   onPressed: () {
                     if (door.state == 'unlocked') {
-                      req.openDoor(door);
+                      req.openDoor(door).then((value) =>
+                          {if (!value) message.credentialsError(context)});
                       futureTree = req.getTree(widget.id);
                       setState(() {});
                     } else {
