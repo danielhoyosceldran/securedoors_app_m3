@@ -3,4 +3,5 @@ Map<String, String> CREDENTIALS = {
   "Bernat": "12345",
   "Eulalia": "43295",
   "Manel": "95783",
+  "Guest": "00112"
 };

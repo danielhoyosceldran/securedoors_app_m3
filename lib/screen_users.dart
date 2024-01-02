@@ -65,6 +65,7 @@ class ScreenUsers extends StatelessWidget {
           _user(profilePhoto: "lib/assets/users/Manel.jpg", name: "Manel", context, credentials: CREDENTIALS["Manel"]),
           _user(profilePhoto: "lib/assets/users/Eulalia.jpg", name: "Eulalia", context, credentials: CREDENTIALS["Eulalia"]),
           _user(profilePhoto: "lib/assets/users/Bernat.jpg", name: "Bernat", context, credentials: CREDENTIALS["Bernat"]),
+          _user(profilePhoto: "lib/assets/users/guest.png", name: "guest", context, credentials: CREDENTIALS["Guest"]),
         ],
       ),
     ));

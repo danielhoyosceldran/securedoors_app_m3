@@ -23,7 +23,7 @@ Future<Tree> getTree(String areaId) async {
   Uri uri = Uri.parse("$BASE_URL/get_children?$areaId");
   final String responseBody = await sendRequest(uri);
   Map<String, dynamic> decoded = convert.jsonDecode(responseBody);
-  print(decoded);
+  //print(decoded);
   return Tree(decoded);
 }
 

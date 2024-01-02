@@ -6,12 +6,17 @@ import 'dart:async';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:securedoors_app/utils/messages.dart' as message;
 import 'package:securedoors_app/widgets/widget_appBar.dart';
+import 'package:securedoors_app/utils/modifiers.dart' as modifier;
 
 class ScreenPartition extends StatefulWidget {
   final String id;
   String? profilePhoto;
 
-  ScreenPartition({Key? key, required this.id, this.profilePhoto = "lib/assets/users/guest.jpg"}) : super(key: key);
+  ScreenPartition(
+      {Key? key,
+      required this.id,
+      this.profilePhoto = "lib/assets/users/guest.jpg"})
+      : super(key: key);
 
   @override
   State<ScreenPartition> createState() => _ScreenPartitionState();
@@ -21,7 +26,7 @@ class _ScreenPartitionState extends State<ScreenPartition> {
   late Future<Tree> futureTree;
 
   late Timer _timer;
-  static const int periodeRefresh = 6;
+  static const int periodeRefresh = 2;
 
   // better a multiple of period in TimeTracker, 2 seconds
 
@@ -85,7 +90,7 @@ class _ScreenPartitionState extends State<ScreenPartition> {
                       child: const Icon(Icons.lock_outline),
                       onTap: () {
                         req.lockAll(snapshot.data!.root).then((value) =>
-                        {if (!value) message.credentialsError(context)});
+                            {if (!value) message.credentialsError(context)});
                         futureTree = req.getTree(widget.id);
                         setState(() {});
                         message.infoMessage(
@@ -96,7 +101,7 @@ class _ScreenPartitionState extends State<ScreenPartition> {
                       child: const Icon(Icons.lock_open_outlined),
                       onTap: () {
                         req.unlockAll(snapshot.data!.root).then((value) =>
-                        {if (!value) message.credentialsError(context)});
+                            {if (!value) message.credentialsError(context)});
                         futureTree = req.getTree(widget.id);
                         setState(() {});
                         message.infoMessage(
@@ -122,7 +127,7 @@ class _ScreenPartitionState extends State<ScreenPartition> {
     assert(area is Partition || area is Space);
     if (area is Partition) {
       return ListTile(
-        title: Text(area.id),
+        title: Text(modifier.quitUnderScore(modifier.capitalize(area.id))),
         leading: const Icon(Icons.space_dashboard_outlined),
         onTap: () => _navigateDownPartition(area.id),
         trailing: const Icon(
@@ -132,21 +137,22 @@ class _ScreenPartitionState extends State<ScreenPartition> {
       );
     } else {
       return ListTile(
-        title: Text(area.id),
-        leading: const Icon(Icons.space_bar_outlined),
-        onTap: () => _navigateDownSpace(area.id),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            //if (area.children.isEmpty) const Text("No doors"),
-            const SizedBox(width: 20,),
-            const Icon(
-              Icons.arrow_forward_ios,
-              size: 15,
-            ),
-          ],
-        )
-      );
+          title: Text(modifier.quitUnderScore(modifier.capitalize(area.id))),
+          leading: const Icon(Icons.space_bar_outlined),
+          onTap: () => _navigateDownSpace(area.id),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (!(area as Space).doorsIside()) const Text("No doors"),
+              const SizedBox(
+                width: 20,
+              ),
+              const Icon(
+                Icons.arrow_forward_ios,
+                size: 15,
+              ),
+            ],
+          ));
     }
   }
 
@@ -171,7 +177,10 @@ class _ScreenPartitionState extends State<ScreenPartition> {
 
   void _navigateDownPartition(String childId) {
     Navigator.of(context)
-        .push(_forwardRoute(ScreenPartition(id: childId, profilePhoto: widget.profilePhoto,)))
+        .push(_forwardRoute(ScreenPartition(
+      id: childId,
+      profilePhoto: widget.profilePhoto,
+    )))
         .then((var value) {
       _refresh();
     });
@@ -179,7 +188,10 @@ class _ScreenPartitionState extends State<ScreenPartition> {
 
   void _navigateDownSpace(String childId) {
     Navigator.of(context)
-        .push(_forwardRoute(ScreenSpace(id: childId, profilePhoto: widget.profilePhoto,)))
+        .push(_forwardRoute(ScreenSpace(
+      id: childId,
+      profilePhoto: widget.profilePhoto,
+    )))
         .then((var value) {
       _refresh();
     });

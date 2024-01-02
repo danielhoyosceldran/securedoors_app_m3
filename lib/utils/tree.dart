@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 abstract class Area{
   late String id;
   late List<dynamic> children;
@@ -9,7 +11,15 @@ class Partition extends Area {
 }
 
 class Space extends Area {
-  Space(String id, List<Door> children) : super(id, children);
+  List<dynamic>? _doorsInside;
+  Space(String id, List<Door> children, List<dynamic> this._doorsInside) : super(id, children);
+
+  bool doorsIside() {
+    return _doorsInside!.isNotEmpty;
+  }
+  bool doorsInsideState() {
+    return true;
+  }
 }
 
 class Door {
@@ -34,7 +44,7 @@ class Tree {
         if (area['class'] == "partition") {
           children.add(Partition(area['id'], <Area>[]));
         } else if (area['class'] == "space") {
-          children.add(Space(area['id'], <Door>[]));
+          children.add(Space(area['id'], <Door>[], area["access_doors"]));
         } else {
           assert(false);
         }
@@ -45,7 +55,7 @@ class Tree {
       for (Map<String, dynamic> d in decodedTree['access_doors']) {
         children.add(Door(id: d['id'], state: d['state'], closed: d['closed']));
       }
-      root = Space(decodedTree['id'], children);
+      root = Space(decodedTree['id'], children, decodedTree["access_doors"]);
     } else {
       assert(false);
     }
@@ -59,6 +69,7 @@ Tree getTree(String id) {
   ]);
 
   Map<String, Area> areas = {};
+  /*
   areas["parking"] = Space("parking", List<Door>.of([doors[0], doors[1]]));
   areas["room1"] = Space("room1", List<Door>.of([doors[4]]));
   areas["room2"] = Space("room2", List<Door>.of([doors[5]]));
@@ -76,6 +87,7 @@ Tree getTree(String id) {
   areas["building"] = Partition("building",
       List<Area>.of([areas["basement"]!, areas["ground_floor"]!, areas["floor1"]!
       ]));
+   */
 
   return Tree(areas[id]! as Map<String, dynamic>);
 }
