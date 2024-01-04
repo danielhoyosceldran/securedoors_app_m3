@@ -74,7 +74,7 @@ class _ScreenPartitionState extends State<ScreenPartition> {
                 padding: const EdgeInsets.all(16.0),
                 itemCount: snapshot.data!.root.children.length,
                 itemBuilder: (BuildContext context, int i) =>
-                    _buildRow(snapshot.data!.root.children[i], i),
+                    _buildRow(snapshot. data!.root.children[i], i),
                 separatorBuilder: (BuildContext context, int index) =>
                     const Divider(),
               ),
@@ -143,7 +143,7 @@ class _ScreenPartitionState extends State<ScreenPartition> {
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (!(area as Space).doorsIside()) const Text("No doors"),
+              (!(area as Space).doorsIside()) ? const Text("No doors") : Text("hi ha portes"),
               const SizedBox(
                 width: 20,
               ),
