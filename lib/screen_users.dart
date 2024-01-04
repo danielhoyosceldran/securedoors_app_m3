@@ -6,7 +6,7 @@ import 'package:securedoors_app/data/currentUser.dart';
 class ScreenUsers extends StatelessWidget {
   const ScreenUsers({Key? key}) : super(key: key);
 
-  Widget _user(BuildContext context, {profilePhoto: String, name: String, credentials: String}) {
+  Widget _user(BuildContext context, {profilePhoto = String, name = String, credentials = String}) {
     return GestureDetector(
       onTap: () {
         updateCurrentUser(

@@ -23,44 +23,7 @@ Future<Tree> getTree(String areaId) async {
   Uri uri = Uri.parse("$BASE_URL/get_children?$areaId");
   final String responseBody = await sendRequest(uri);
   Map<String, dynamic> decoded = convert.jsonDecode(responseBody);
-  //print(decoded);
-  print(getSpaceDoorsInfo(decoded)["numDoors"]);
   return Tree(decoded);
-}
-
-
-
-Map<String, String> getSpaceDoorsInfo(Map<String, dynamic> decodedTree) {
-  bool allLocked = true;
-  int items = 0;
-  if (decodedTree['class'] == "space") {
-    for (Map<String, dynamic> d in decodedTree['access_doors']) {
-      items++;
-      if (d["state"] == "unlocked") {
-        allLocked = false;
-      }
-    }
-  }
-  return {
-    "numDoors": items.toString(),
-    "allLocked": allLocked.toString()
-  };
-    /*
-  final Tree tree = await getTree(id);
-  bool allLocked = true;
-  if (tree.root.children.isNotEmpty) {
-    for (Door door in tree.root.children) {
-      if (door.state == "unlocked") {
-        allLocked = false;
-        break;
-      }
-    }
-  }
-  return {
-    "numDoors": tree.root.children.length.toString(),
-    "allLocked": allLocked.toString()
-  };
-  */
 }
 
 Future<bool> lockDoor(Door door) async {

@@ -11,14 +11,18 @@ class Partition extends Area {
 }
 
 class Space extends Area {
-  List<dynamic>? _doorsInside;
-  Space(String id, List<Door> children, List<dynamic> this._doorsInside) : super(id, children);
+  final List<dynamic>? _doorsInside;
+  final Map<String, String>? _doorsInsideInfo;
+  Space(String id, List<Door> children, List<dynamic> this._doorsInside, Map<String, String> this._doorsInsideInfo) : super(id, children);
 
   bool doorsIside() {
     return _doorsInside!.isNotEmpty;
   }
-  bool doorsInsideState() {
-    return true;
+  bool allDoorsLocked() {
+    return _doorsInsideInfo!["allLocked"] == "true" ? true : false;
+  }
+  String numDoors() {
+    return _doorsInsideInfo!["numDoors"]!;
   }
 }
 
@@ -44,7 +48,7 @@ class Tree {
         if (area['class'] == "partition") {
           children.add(Partition(area['id'], <Area>[]));
         } else if (area['class'] == "space") {
-          children.add(Space(area['id'], <Door>[], area["access_doors"]));
+          children.add(Space(area['id'], <Door>[], area["access_doors"], getSpaceDoorsInfo(area)));
         } else {
           assert(false);
         }
@@ -55,63 +59,26 @@ class Tree {
       for (Map<String, dynamic> d in decodedTree['access_doors']) {
         children.add(Door(id: d['id'], state: d['state'], closed: d['closed']));
       }
-      root = Space(decodedTree['id'], children, decodedTree["access_doors"]);
+      root = Space(decodedTree['id'], children, decodedTree["access_doors"], getSpaceDoorsInfo(decodedTree));
     } else {
       assert(false);
     }
   }
 }
 
-Tree getTree(String id) {
-  final List<Door> doors = List<Door>.of([
-    Door(id:"D1"), Door(id:"D2"), Door(id:"D3"), Door(id:"D4"), Door(id:"D5"),
-    Door(id:"D6"), Door(id:"D7"), Door(id:"D8"), Door(id:"D9")
-  ]);
+Map<String, String> getSpaceDoorsInfo(Map<String, dynamic> decodedTree) {
+  if (decodedTree["class"] != "space") return {};
+  bool allLocked = true;
 
-  Map<String, Area> areas = {};
-  /*
-  areas["parking"] = Space("parking", List<Door>.of([doors[0], doors[1]]));
-  areas["room1"] = Space("room1", List<Door>.of([doors[4]]));
-  areas["room2"] = Space("room2", List<Door>.of([doors[5]]));
-  areas["hall"] = Space("hall", List<Door>.of([doors[2], doors[3]]));
-  areas["room3"] = Space("room3", List<Door>.of([doors[7]]));
-  areas["it"] = Space("it", List<Door>.of([doors[8]]));
-  areas["corridor"] = Space("corridor", List<Door>.of([doors[6]]));
-  areas["basement"] = Partition("basement", List<Area>.of([areas["parking"]!]));
-  areas["ground_floor"] = Partition("ground_floor",
-      List<Area>.of([areas["room1"]!, areas["room2"]!, areas["hall"]!
-      ]));
-  areas["floor1"] = Partition("floor1",
-      List<Area>.of([areas["room3"]!, areas["it"]!, areas["corridor"]!
-      ]));
-  areas["building"] = Partition("building",
-      List<Area>.of([areas["basement"]!, areas["ground_floor"]!, areas["floor1"]!
-      ]));
-   */
-
-  return Tree(areas[id]! as Map<String, dynamic>);
-}
-
-testGetTree() {
-  Tree tree;
-
-  for (String id in ["building", "hall", "floor1", "room1"]) {
-    tree = getTree(id);
-    if (tree.root is Partition) {
-      print("root ${tree.root.id}");
-      for (Area area in tree.root.children) {
-        print("child ${area.id}");
-      }
-    } else {
-      print("root ${tree.root.id}");
-      for (Door door in tree.root.children) {
-        print("child ${door.id}, state ${door.state}, closed ${door.closed}");
-      }
+  for (Map<String, dynamic> doors in decodedTree["access_doors"]) {
+    if (doors["state"] == "unlocked") {
+      allLocked = false;
+      break;
     }
-    print("");
   }
-}
 
-void main() {
-  testGetTree();
+  return {
+    "numDoors": decodedTree["access_doors"].length.toString(),
+    "allLocked": allLocked.toString()
+  };
 }
