@@ -31,9 +31,8 @@ PreferredSizeWidget? customAppBar(
           margin: const EdgeInsets.only(left: 10, right: 15),
           padding: const EdgeInsets.only(left: 5, right: 10, top: 2, bottom: 2),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
-            color: Colors.white.withOpacity(0.1)
-          ),
+              borderRadius: BorderRadius.circular(100),
+              color: Colors.white.withOpacity(0.1)),
           child: Row(
             children: [
               Container(

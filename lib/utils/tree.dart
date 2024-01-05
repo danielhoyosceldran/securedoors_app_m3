@@ -69,11 +69,13 @@ class Tree {
 Map<String, String> getSpaceDoorsInfo(Map<String, dynamic> decodedTree) {
   if (decodedTree["class"] != "space") return {};
   bool allLocked = true;
+  bool allUnloked = true;
 
-  for (Map<String, dynamic> doors in decodedTree["access_doors"]) {
-    if (doors["state"] == "unlocked") {
+  for (Map<String, dynamic> door in decodedTree["access_doors"]) {
+    if (door["state"] == "unlocked") {
       allLocked = false;
-      break;
+    } else if (door["state"] == "locked") {
+      allUnloked = false;
     }
   }
 

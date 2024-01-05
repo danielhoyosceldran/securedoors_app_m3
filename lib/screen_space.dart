@@ -3,7 +3,6 @@ import 'package:securedoors_app/utils/tree.dart';
 import 'package:securedoors_app/requests/actionsRequests.dart' as req;
 import 'dart:async';
 import 'package:securedoors_app/utils/messages.dart' as message;
-import 'package:securedoors_app/utils/alerts.dart' as alert;
 import 'package:securedoors_app/widgets/widget_appBar.dart';
 
 class ScreenSpace extends StatefulWidget {
@@ -125,16 +124,6 @@ class _ScreenSpaceState extends State<ScreenSpace> {
                       ? Theme.of(context).colorScheme.primary
                       : Colors.grey),
             ), // lockUnlockButton = "unlock"
-            /*
-            Icon(
-                (door.state == "locked")
-                    ? Icons.lock_open_outlined
-                    : Icons.lock_outline,
-                color: (door.closed)
-                    ? Theme.of(context).colorScheme.primary
-                    : Colors.grey,
-              )),
-             */
           ),
           TextButton(
             onPressed: () {
@@ -162,14 +151,6 @@ class _ScreenSpaceState extends State<ScreenSpace> {
                       ? Theme.of(context).colorScheme.primary
                       : Colors.grey),
             ),
-            /*
-            Icon(
-                (door.closed) ? Icons.door_back_door_outlined : Icons.meeting_room_outlined,
-                color: (door.state == "unlocked")
-                    ? Theme.of(context).colorScheme.primary
-                    : Colors.grey,
-              )),
-             */
           ),
         ],
       ),
